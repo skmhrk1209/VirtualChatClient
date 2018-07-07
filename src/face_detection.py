@@ -6,7 +6,7 @@ import requests
 def detectFace(imageFile):
 
     url = 'https://vision.googleapis.com/v1/images:annotate?key='
-    key = 'AIzaSyCbezfge-FqcRvL1fNjNmNBW7LNNw_JgLw'
+    key = ''
 
     with open(imageFile, 'rb') as buffer:
         image = buffer.read()
