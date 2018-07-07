@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.ipp": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "iosfwd": "cpp"
     }
 }

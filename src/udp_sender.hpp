@@ -36,8 +36,10 @@ template <typename... Args>
 void UDPSender::send(Args &&... args) {
     std::stringstream sstream;
 
-    static_cast<void>(
-        std::initializer_list<int>{(sstream << args << " ", 0)...});
+    auto index(0);
+
+    static_cast<void>(std::initializer_list<int>{
+        (sstream << (index++ ? " " : "") << args, 0)...});
 
     socket.send_to(boost::asio::buffer(sstream.str()), remoteEndpoint);
 }
@@ -46,8 +48,10 @@ template <typename Function, typename... Args>
 void UDPSender::async_send(Function &&handler, Args &&... args) {
     std::stringstream sstream;
 
-    static_cast<void>(
-        std::initializer_list<int>{(sstream << args << " ", 0)...});
+    auto index(0);
+
+    static_cast<void>(std::initializer_list<int>{
+        (sstream << (index++ ? " " : "") << args, 0)...});
 
     socket.async_send_to(boost::asio::buffer(sstream.str()), remoteEndpoint,
                          handler);

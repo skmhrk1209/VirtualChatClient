@@ -42,20 +42,21 @@ class VirtualChatClientApp : public ofBaseApp {
     void handleReceive(size_t);
     void detectFace();
 
-    // アバターの3Dモデル
-    using Avatar = tuple<ofxAssimpModelLoader, string, tuple<string, float>>;
-    unordered_map<string, Avatar> avatars;
-
     // 部屋の3Dモデル
     // ユーザの感情に対応するアイコン画像
-    ofxAssimpModelLoader room;
+    ofxAssimpModelLoader scene;
+    unordered_map<string, ofxAssimpModelLoader> models;
     unordered_map<string, ofImage> icons;
+
+    // アバター
+    using Avatar = tuple<ofxAssimpModelLoader, string, tuple<string, float>>;
+    unordered_map<string, Avatar> avatars;
 
     // カメラやライティング
     enum class CameraType { Global, Local } cameraType;
     ofCamera localCamera;
     ofCamera globalCamera;
-    ofLight light;
+    vector<ofLight> lights;
 
     // GUI
     unique_ptr<ofxDatGui> gui;
