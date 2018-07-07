@@ -299,7 +299,7 @@ void VirtualChatClientApp::handleReceive(size_t size) {
             get<0>(avatars[id]).loadModel("astroBoy_walk.dae");
             get<0>(avatars[id]).setScale(1, 1, 1);
             get<0>(avatars[id]).setRotation(0, 180, 1, 0, 0);
-            get<0>(avatars[id]).setPosition(-3500, 0, 7000);
+            get<0>(avatars[id]).setPosition(0, 0, 0);
             get<0>(avatars[id]).setLoopStateForAllAnimations(OF_LOOP_NORMAL);
             get<0>(avatars[id]).playAllAnimations();
             get<1>(avatars[id]) = "";
