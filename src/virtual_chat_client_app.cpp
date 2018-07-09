@@ -7,18 +7,19 @@ void VirtualChatClientApp::setup() {
     ofEnableSmoothing();
     ofDisableArbTex();
 
-    //=================================GUIの設定======================================//
+    //=================================guiの設定======================================//
 
-    gui = make_unique<ofxDatGui>(ofxDatGuiAnchor::TOP_LEFT);
-    gui->addButton("connect");
-    gui->addButton("disconnect");
-    gui->addTextInput("local port", "11888");
-    gui->addTextInput("remote address", "172.20.10.3");
-    gui->addTextInput("remote port", "11999");
-    gui->addTextInput("message", "");
-    gui->addDropdown("avatars", {"boy"})->select(0);
+    gui.setWidth(300);
 
-    gui->onButtonEvent([this](const ofxDatGuiButtonEvent &event) {
+    gui.addButton("connect");
+    gui.addButton("disconnect");
+    gui.addTextInput("local port", "11888");
+    gui.addTextInput("remote address", "172.20.10.3");
+    gui.addTextInput("remote port", "11999");
+    gui.addTextInput("message", "")->setTextUpperCase(false);
+    gui.addDropdown("avatars", {"boy"})->select(0);
+
+    gui.onButtonEvent([this](const ofxDatGuiButtonEvent &event) {
         if (event.target->is("connect")) {
             connect();
         }
@@ -27,10 +28,10 @@ void VirtualChatClientApp::setup() {
         }
     });
 
-    gui->onTextInputEvent([this](const ofxDatGuiTextInputEvent &event) {
+    gui.onTextInputEvent([this](const ofxDatGuiTextInputEvent &event) {
         if (event.target->is("message") && udpSender) {
             udpSender->async_send([](...) {}, id,
-                                  gui->getDropdown("avatars")->getLabel(),
+                                  gui.getDropdown("avatars")->getLabel(),
                                   "message", event.text);
         }
     });
@@ -94,7 +95,7 @@ void VirtualChatClientApp::update() {
             auto position = get<0>(avatars[id]).getPosition() + direction * +20;
 
             udpSender->async_send([](...) {}, id,
-                                  gui->getDropdown("avatars")->getLabel(),
+                                  gui.getDropdown("avatars")->getLabel(),
                                   "position", position);
         } else if (ofGetKeyPressed(OF_KEY_DOWN)) {
             auto direction = ofPoint(0, 0, -1).getRotated(
@@ -103,7 +104,7 @@ void VirtualChatClientApp::update() {
             auto position = get<0>(avatars[id]).getPosition() + direction * -20;
 
             udpSender->async_send([](...) {}, id,
-                                  gui->getDropdown("avatars")->getLabel(),
+                                  gui.getDropdown("avatars")->getLabel(),
                                   "position", position);
         }
 
@@ -111,13 +112,13 @@ void VirtualChatClientApp::update() {
             auto rotation = get<0>(avatars[id]).getRotationAngle(1) - 2;
 
             udpSender->async_send([](...) {}, id,
-                                  gui->getDropdown("avatars")->getLabel(),
+                                  gui.getDropdown("avatars")->getLabel(),
                                   "rotation", rotation);
         } else if (ofGetKeyPressed(OF_KEY_LEFT)) {
             auto rotation = get<0>(avatars[id]).getRotationAngle(1) + 2;
 
             udpSender->async_send([](...) {}, id,
-                                  gui->getDropdown("avatars")->getLabel(),
+                                  gui.getDropdown("avatars")->getLabel(),
                                   "rotation", rotation);
         }
     }
@@ -136,7 +137,7 @@ void VirtualChatClientApp::update() {
                                     get<0>(avatars[id]).getRotationAngle(1),
                                     get<0>(avatars[id]).getRotationAxis(1)) *
                                     100 +
-                                ofPoint(0, 600, 0));
+                                ofPoint(0, 850, 0));
 
         localCamera.setOrientation(
             ofPoint(0, get<0>(avatars[id]).getRotationAngle(1), 0));
@@ -145,8 +146,8 @@ void VirtualChatClientApp::update() {
                                  ofPoint(0, 0, -1).getRotated(
                                      get<0>(avatars[id]).getRotationAngle(1),
                                      get<0>(avatars[id]).getRotationAxis(1)) *
-                                     -1000 +
-                                 ofPoint(0, 600, 0));
+                                     -1500 +
+                                 ofPoint(0, 850, 0));
 
         globalCamera.setOrientation(
             ofPoint(0, get<0>(avatars[id]).getRotationAngle(1), 0));
@@ -175,9 +176,9 @@ void VirtualChatClientApp::draw() {
             ofPushMatrix();
 
             ofTranslate(get<0>(avatar.second).getPosition() +
-                        ofPoint(0, 600, 0));
+                        ofPoint(0, 850, 0));
 
-            ofRotateYDeg(get<0>(avatar.second).getRotationAngle(1) + 180);
+            ofRotateY(get<0>(avatar.second).getRotationAngle(1) + 180);
 
             auto bb = font.getStringBoundingBox(get<1>(avatar.second), 0, 0);
 
@@ -205,9 +206,9 @@ void VirtualChatClientApp::draw() {
             ofPushMatrix();
 
             ofTranslate(get<0>(avatar.second).getPosition() +
-                        ofPoint(0, 650, 0));
+                        ofPoint(0, 900, 0));
 
-            ofRotateYDeg(ofGetElapsedTimef() * 180);
+            ofRotateY(ofGetElapsedTimef() * 180);
 
             ofSetColor(255, 255, 255, 255 * get<1>(get<2>(avatar.second)));
 
@@ -250,17 +251,17 @@ void VirtualChatClientApp::keyPressed(int key) {
 //=================================サーバとのconnectionを張る======================================//
 void VirtualChatClientApp::connect() {
     // 一度connectionを貼ったらアバターの変更はできない
-    gui->getDropdown("avatars")->setEnabled(false);
+    gui.getDropdown("avatars")->setEnabled(false);
 
     //=================================サーバのアドレスとポートを指定======================================//
 
     boost::asio::ip::udp::endpoint localEndpoint(
         boost::asio::ip::address::from_string("127.0.0.1"),
-        stoi(gui->getTextInput("local port")->getText()));
+        stoi(gui.getTextInput("local port")->getText()));
     boost::asio::ip::udp::endpoint remoteEndpoint(
         boost::asio::ip::address::from_string(
-            gui->getTextInput("remote address")->getText()),
-        stoi(gui->getTextInput("remote port")->getText()));
+            gui.getTextInput("remote address")->getText()),
+        stoi(gui.getTextInput("remote port")->getText()));
 
     //=================================senderの設定======================================//
 
@@ -270,7 +271,7 @@ void VirtualChatClientApp::connect() {
 
     // createメッセージを非同期送信
     udpSender->async_send([](...) {}, id,
-                          gui->getDropdown("avatars")->getLabel(), "created");
+                          gui.getDropdown("avatars")->getLabel(), "created");
 
     // send完了ハンドラの実行スレッド生成
     sender = make_unique<thread>([this]() {
@@ -343,7 +344,7 @@ void VirtualChatClientApp::disconnect() {
     detectFaceService.reset();
 
     // アバターの変更を可能に
-    gui->getDropdown("avatars")->setEnabled(true);
+    gui.getDropdown("avatars")->setEnabled(true);
 }
 
 //=================================受信完了ハンドラ======================================//
@@ -413,7 +414,7 @@ void VirtualChatClientApp::detectFace() {
 
     // 推定された感情を非同期送信
     udpSender->async_send([](...) {}, id,
-                          gui->getDropdown("avatars")->getLabel(), "emotion",
+                          gui.getDropdown("avatars")->getLabel(), "emotion",
                           emotion);
 
     // 続けて表情認識

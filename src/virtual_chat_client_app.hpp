@@ -58,8 +58,8 @@ class VirtualChatClientApp : public ofBaseApp {
     ofCamera globalCamera;
     vector<ofLight> lights;
 
-    // GUI
-    unique_ptr<ofxDatGui> gui;
+    // gui
+    ofxDatGui gui;
     ofTrueTypeFont font;
 
     // 表情認識のためのスレッド
